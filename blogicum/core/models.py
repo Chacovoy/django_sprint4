@@ -14,4 +14,4 @@ class BlogModel(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ['-order_date']
+        ordering = ['-created_at']
