@@ -1,0 +1,3 @@
+TITLE_MAX_LENGTH: int = 256
+TITLE_SHORT: int = 40
+POSTS_AMOUNT: int = 10 

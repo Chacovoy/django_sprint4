@@ -2,11 +2,10 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 from core.models import BlogModel
+from .constants import TITLE_MAX_LENGTH, TITLE_SHORT
 
 
 User = get_user_model()
-TITLE_MAX_LENGTH: int = 256
-TITLE_SHORT: int = 40
 
 
 class Category(BlogModel):

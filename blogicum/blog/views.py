@@ -12,11 +12,10 @@ from django.views.generic import (
     UpdateView,
 )
 
+from .constants import POSTS_AMOUNT
 from .forms import CommentForm, PasswordChangeForm, PostForm, UserForm
 from .models import Category, Comment, Post, User
 from .utils import filter_published, select_post_objects
-
-POSTS_AMOUNT: int = 10
 
 
 class PostsDetailView(DetailView):
