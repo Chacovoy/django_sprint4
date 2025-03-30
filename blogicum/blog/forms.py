@@ -10,13 +10,12 @@ User = get_user_model()
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = '__all__'
+        exclude = ('author',)
         widgets = {
             'text': forms.Textarea(attrs={'rows': '10', 'cols': '20'}),
             'comment': forms.Textarea(attrs={'rows': '20', 'cols': '40'}),
             'pub_date': forms.DateInput(attrs={'type': 'date'}),
         }
-        exclude = ('author',)
 
 
 class CommentForm(forms.ModelForm):
