@@ -8,7 +8,6 @@ User = get_user_model()
 
 
 class PostForm(forms.ModelForm):
-
     class Meta:
         model = Post
         fields = '__all__'
@@ -21,7 +20,6 @@ class PostForm(forms.ModelForm):
 
 
 class CommentForm(forms.ModelForm):
-
     class Meta:
         model = Comment
         fields = ('text',)
@@ -37,7 +35,6 @@ class UserForm(forms.ModelForm):
 
 
 class PasswordChangeForm(forms.ModelForm):
-
     class Meta:
         model = User
         fields = ('password',)

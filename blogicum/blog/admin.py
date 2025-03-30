@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, Location, Post
+from .models import Category, Location, Post, Comment
 
 
 @admin.register(Post)
@@ -22,3 +22,10 @@ class LocationAdmin(admin.ModelAdmin):
     list_display = ['name']
     search_fields = ['name']
     list_filter = ['name']
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ['text', 'author', 'post', 'created_at']
+    search_fields = ['text', 'author', 'post']
+    list_filter = ['author', 'post', 'created_at']
