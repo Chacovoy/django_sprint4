@@ -1,5 +1,6 @@
 from datetime import datetime
-
+from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
@@ -14,23 +15,24 @@ from django.views.generic import (
 
 from .constants import POSTS_AMOUNT
 from .forms import CommentForm, PasswordChangeForm, PostForm, UserForm
-from .models import Category, Comment, Post, User
+from .models import Category, Comment, Post
 from .utils import filter_published, select_post_objects
+
+
+User = get_user_model()
 
 
 class PostsDetailView(DetailView):
     model = Post
-    form_class = CommentForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        post = get_object_or_404(Post, pk=self.kwargs.get('pk'))
+        post = self.get_object()
         if post.author != self.request.user and not post.is_published:
+            messages.error(self.request, "Вы не имеете доступа к этому посту.")
             raise Http404
         context['form'] = CommentForm()
-        context['comments'] = Comment.objects.prefetch_related(
-            'post'
-        ).filter(
+        context['comments'] = post.comments.all().filter(
             post=post
         )
         return context
