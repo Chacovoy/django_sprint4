@@ -4,7 +4,6 @@ def filter_published(obj):
 
 
 def select_post_objects(obj):
-    """ Takes Post model instance """
     return obj.objects.select_related(
         'author',
         'location',
