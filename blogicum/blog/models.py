@@ -50,7 +50,7 @@ class PostManager(models.Manager):
         queryset = self.filter(pub_date__lte=timezone.now())
         if user and user.is_authenticated:
             queryset = queryset.filter(
-                Q(is_published=True) | Q(author=user)
+                models.Q(is_published=True) | models.Q(author=user)
             )
         else:
             queryset = queryset.filter(is_published=True)
@@ -58,7 +58,9 @@ class PostManager(models.Manager):
 
     def get_visible_posts(self, user=None):
         return self.get_published(user).filter(
-            Q(category__isnull=True) | Q(category__is_published=True)
+            models.Q(category__isnull=True) | models.Q(
+                category__is_published=True
+            )
         )
 
     def get_posts_for_user(self, user=None):
@@ -66,18 +68,23 @@ class PostManager(models.Manager):
 
         if not user or not user.is_authenticated:
             queryset = queryset.filter(
-                Q(is_published=True) & 
-                Q(pub_date__lte=timezone.now()) &
-                (Q(category__isnull=True) | Q(category__is_published=True))
+                is_published=True,
+                pub_date__lte=timezone.now(),
+                category__isnull=True
+            ) | queryset.filter(
+                is_published=True,
+                pub_date__lte=timezone.now(),
+                category__is_published=True
             )
         else:
-            queryset = queryset.filter(
-                Q(author=user) |
-                (
-                    Q(is_published=True) & 
-                    Q(pub_date__lte=timezone.now()) &
-                    (Q(category__isnull=True) | Q(category__is_published=True))
-                )
+            queryset = queryset.filter(author=user) | queryset.filter(
+                is_published=True,
+                pub_date__lte=timezone.now(),
+                category__isnull=True
+            ) | queryset.filter(
+                is_published=True,
+                pub_date__lte=timezone.now(),
+                category__is_published=True
             )
 
         return queryset.order_by('-pub_date')
@@ -86,10 +93,16 @@ class PostManager(models.Manager):
         return self.filter(author=author).order_by('-pub_date')
 
     def get_public_posts(self):
-        return self.filter(
-            Q(is_published=True) &
-            Q(pub_date__lte=timezone.now()) &
-            (Q(category__isnull=True) | Q(category__is_published=True))
+        return (
+            self.filter(
+                is_published=True,
+                pub_date__lte=timezone.now(),
+                category__isnull=True
+            ) | self.filter(
+                is_published=True,
+                pub_date__lte=timezone.now(),
+                category__is_published=True
+            )
         ).order_by('-pub_date')
 
 
