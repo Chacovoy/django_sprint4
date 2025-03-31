@@ -9,7 +9,7 @@ urlpatterns = [
     path('',
          views.PostsListView.as_view(), name='index'),
 
-    path('posts/<int:pk>/',
+    path('posts/<int:post_id>/',
          views.PostsDetailView.as_view(), name='post_detail'),
 
     path('posts/create/',
@@ -38,7 +38,4 @@ urlpatterns = [
 
     path('profile/<str:username>/edit/',
          views.UserUpdateView.as_view(), name='edit_profile'),
-
-    path('profile/<str:username>/edit/password/',
-         views.UserPasswordUpdateView.as_view(), name='password_change'),
 ]
