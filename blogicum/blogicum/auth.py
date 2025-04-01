@@ -1,5 +1,5 @@
 from django.contrib.auth.forms import UserCreationForm
-from django.urls import path, reverse_lazy, include
+from django.urls import path, reverse_lazy
 from django.views.generic import CreateView
 
 urlpatterns = [
@@ -12,5 +12,4 @@ urlpatterns = [
         ),
         name='registration',
     ),
-    path('', include('django.contrib.auth.urls')),
 ]

@@ -1,9 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.utils import timezone
 
 from core.models import BlogModel
-from .constants import TITLE_MAX_LENGTH, TITLE_SHORT
+from blogicum.constants import TITLE_MAX_LENGTH, TITLE_SHORT
+from .managers import PostManager
 
 
 User = get_user_model()
@@ -43,67 +43,6 @@ class Location(BlogModel):
 
     def __str__(self):
         return self.name[:TITLE_SHORT]
-
-
-class PostManager(models.Manager):
-    def get_published(self, user=None):
-        queryset = self.filter(pub_date__lte=timezone.now())
-        if user and user.is_authenticated:
-            queryset = queryset.filter(
-                models.Q(is_published=True) | models.Q(author=user)
-            )
-        else:
-            queryset = queryset.filter(is_published=True)
-        return queryset
-
-    def get_visible_posts(self, user=None):
-        return self.get_published(user).filter(
-            models.Q(category__isnull=True) | models.Q(
-                category__is_published=True
-            )
-        )
-
-    def get_posts_for_user(self, user=None):
-        queryset = self.all()
-
-        if not user or not user.is_authenticated:
-            queryset = queryset.filter(
-                is_published=True,
-                pub_date__lte=timezone.now(),
-                category__isnull=True
-            ) | queryset.filter(
-                is_published=True,
-                pub_date__lte=timezone.now(),
-                category__is_published=True
-            )
-        else:
-            queryset = queryset.filter(author=user) | queryset.filter(
-                is_published=True,
-                pub_date__lte=timezone.now(),
-                category__isnull=True
-            ) | queryset.filter(
-                is_published=True,
-                pub_date__lte=timezone.now(),
-                category__is_published=True
-            )
-
-        return queryset.order_by('-pub_date')
-
-    def get_author_posts(self, author):
-        return self.filter(author=author).order_by('-pub_date')
-
-    def get_public_posts(self):
-        return (
-            self.filter(
-                is_published=True,
-                pub_date__lte=timezone.now(),
-                category__isnull=True
-            ) | self.filter(
-                is_published=True,
-                pub_date__lte=timezone.now(),
-                category__is_published=True
-            )
-        ).order_by('-pub_date')
 
 
 class Post(BlogModel):
@@ -148,6 +87,8 @@ class Post(BlogModel):
         blank=True,
     )
 
+    objects = PostManager()
+
     class Meta(BlogModel.Meta):
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
@@ -155,8 +96,6 @@ class Post(BlogModel):
 
     def __str__(self):
         return self.title[:TITLE_SHORT]
-
-    objects = PostManager()
 
 
 class Comment(BlogModel):
@@ -173,4 +112,6 @@ class Comment(BlogModel):
     )
 
     class Meta(BlogModel.Meta):
+        verbose_name = 'комментарий'
+        verbose_name_plural = 'Комментарии'
         ordering = ['created_at']
