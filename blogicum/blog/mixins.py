@@ -42,12 +42,9 @@ class CommentAuthorAccessMixin(UserPassesTestMixin):
         )
 
 
-class UserAccessMixin(UserPassesTestMixin):
+class UserAccessMixin:
     def test_func(self):
-        return self.user.id == self.request.user.id
+        return self.request.user == self.user
 
     def handle_no_permission(self):
-        return redirect(
-            'blog:profile',
-            username=self.user.username
-        ) 
+        return redirect('blog:profile', username=self.user.username)

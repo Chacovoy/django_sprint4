@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import Http404
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import (
@@ -15,14 +15,13 @@ from django.views.generic import (
 )
 
 from blogicum.constants import POSTS_AMOUNT
-from .forms import CommentForm, PostForm, UserForm
+from .forms import CommentForm, UserForm
 from .models import Category, Comment, Post
 from .mixins import (
     AuthorMixin,
     AuthorAccessMixin,
     CommentAuthorAccessMixin,
     PostMixin,
-    UserAccessMixin,
 )
 
 
@@ -33,7 +32,7 @@ class PostsDetailView(DetailView):
     model = Post
     pk_url_kwarg = 'post_id'
 
-    def get_object(self, queryset=None):
+    def get_object(self):
         post = get_object_or_404(
             Post.objects.select_related(
                 'author',
