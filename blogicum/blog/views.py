@@ -74,7 +74,9 @@ class PostsCreateView(LoginRequiredMixin, AuthorMixin, PostMixin, CreateView):
         )
 
 
-class PostsUpdateView(LoginRequiredMixin, AuthorAccessMixin, PostMixin, UpdateView):
+class PostsUpdateView(
+    LoginRequiredMixin, AuthorAccessMixin, PostMixin, UpdateView
+):
     def get_success_url(self):
         return reverse_lazy(
             'blog:post_detail',
@@ -82,7 +84,9 @@ class PostsUpdateView(LoginRequiredMixin, AuthorAccessMixin, PostMixin, UpdateVi
         )
 
 
-class PostsDeleteView(LoginRequiredMixin, AuthorAccessMixin, PostMixin, DeleteView):
+class PostsDeleteView(
+    LoginRequiredMixin, AuthorAccessMixin, PostMixin, DeleteView
+):
     success_url = reverse_lazy('blog:index')
 
 
@@ -207,4 +211,3 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
             'blog:profile',
             kwargs={'username': self.object.get_username()}
         )
-
