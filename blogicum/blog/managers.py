@@ -18,18 +18,3 @@ class PostManager(models.Manager):
             queryset = queryset | self.filter(author=user)
 
         return queryset.order_by('-pub_date')
-
-    def get_user_posts(self, user=None, profile_user=None):
-        return self.filter(
-            models.Q(author=user) | models.Q(
-                is_published=True,
-                pub_date__lte=timezone.now(),
-                category__isnull=True,
-                author=profile_user
-            ) | models.Q(
-                is_published=True,
-                pub_date__lte=timezone.now(),
-                category__is_published=True,
-                author=profile_user
-            )
-        ).order_by('-pub_date')

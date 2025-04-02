@@ -21,6 +21,7 @@ from .mixins import (
     AuthorMixin,
     AuthorAccessMixin,
     CommentAuthorAccessMixin,
+    CommentMixin,
     PostMixin,
 )
 
@@ -29,7 +30,6 @@ User = get_user_model()
 
 
 class PostsDetailView(DetailView):
-    model = Post
     pk_url_kwarg = 'post_id'
 
     def get_object(self):
@@ -135,33 +135,18 @@ class CommentCreateView(LoginRequiredMixin, AuthorMixin, CreateView):
 
 
 class CommentUpdateView(
-    LoginRequiredMixin, CommentAuthorAccessMixin, UpdateView
+    LoginRequiredMixin, CommentAuthorAccessMixin, CommentMixin, UpdateView
 ):
-    model = Comment
     form_class = CommentForm
-    pk_url_kwarg = 'comment_id'
-
-    def get_success_url(self):
-        return reverse(
-            'blog:post_detail',
-            kwargs={'post_id': self.kwargs.get('post_id')}
-        )
 
 
 class CommentDeleteView(
     LoginRequiredMixin,
     CommentAuthorAccessMixin,
+    CommentMixin,
     DeleteView
 ):
-    model = Comment
     template_name = 'blog/comment_form.html'
-    pk_url_kwarg = 'comment_id'
-
-    def get_success_url(self):
-        return reverse(
-            'blog:post_detail',
-            kwargs={'post_id': self.kwargs.get('post_id')}
-        )
 
 
 class UserDetailView(ListView):
@@ -174,19 +159,9 @@ class UserDetailView(ListView):
             User,
             username=self.kwargs['username']
         )
-        if self.request.user.is_authenticated:
-            return Post.objects.filter(
-                Q(author=self.author) & (
-                    Q(author=self.request.user) | Q(
-                        is_published=True, pub_date__lte=timezone.now()
-                    )
-                )
-            ).order_by('-pub_date')
-        return Post.objects.filter(
-            author=self.author,
-            is_published=True,
-            pub_date__lte=timezone.now()
-        ).order_by('-pub_date')
+        return Post.objects.get_published(
+            user=self.request.user
+        ).filter(author=self.author).order_by('-pub_date')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

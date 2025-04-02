@@ -1,8 +1,9 @@
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.shortcuts import redirect
+from django.urls import reverse
 
 from .forms import PostForm
-from .models import Post
+from .models import Comment, Post
 
 
 class AuthorMixin:
@@ -39,6 +40,17 @@ class CommentAuthorAccessMixin(UserPassesTestMixin):
         return redirect(
             'blog:post_detail',
             post_id=self.kwargs.get('post_id')
+        )
+
+
+class CommentMixin:
+    model = Comment
+    pk_url_kwarg = 'comment_id'
+
+    def get_success_url(self):
+        return reverse(
+            'blog:post_detail',
+            kwargs={'post_id': self.kwargs.get('post_id')}
         )
 
 
